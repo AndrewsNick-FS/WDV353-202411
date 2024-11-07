@@ -6,24 +6,16 @@ app.use(express.json());
 
 `localhost:3000/`;
 app.get("/", (req, res) => {
-  console.log("GET");
-  res.json({ message: "Hello World!" });
+  res.status(200).send("Service is up");
 });
 
 `localhost:3000/api`;
-app.use("/api", router);
+app.use("/items", router);
 
-app.use((req, res, next) => {
-  const error = new Error("Not Found");
-  error.status = 404;
-  next(error);
-});
-
+// Error handling middleware
 app.use((err, req, res, next) => {
-  // console.log("ERROR >>>", err);
-  res
-    .status(err.status || 500)
-    .json({ message: err.message, status: err.status });
+  console.error(err.stack);
+  res.status(500).json({ message: "Internal Server Error" });
 });
 
 module.exports = app;
