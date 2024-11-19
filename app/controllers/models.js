@@ -1,4 +1,4 @@
-const Model = require("../models/Model");
+const Model = require("../models/model");
 
 // Get all models
 exports.getAllModels = async (req, res) => {
