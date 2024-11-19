@@ -1,81 +1,112 @@
 const Model = require("../models/model");
+const Car = require("../models/car");
 
 // Get all models
-exports.getAllModels = async (req, res) => {
+const getAllModels = async (req, res) => {
   try {
-    const models = await Model.find().populate("car");
+    const models = await Model.find().populate("car"); // Populate car details
     res.status(200).json(models);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
 
-// Get models by ID
-exports.getModelById = async (req, res) => {
+// Get a model by ID
+const getModelById = async (req, res) => {
   try {
     const model = await Model.findById(req.params.id).populate("car");
-    if (!model) return res.status(404).json({ message: "Model not found" });
+    if (!model) {
+      return res.status(404).json({ error: "Model not found" });
+    }
     res.status(200).json(model);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
 
 // Create a new model
-exports.createModel = async (req, res) => {
+const createModel = async (req, res) => {
   try {
-    const { name, type, price, car } = req.body;
+    const { name, manufacturer, category } = req.body;
 
-    // Validate car ID
+    // Validate required fields
+    if (!name || !manufacturer || !category) {
+      return res.status(400).json({ error: "All fields are required." });
+    }
+
+    // Validate car existence
     const parentCar = await Car.findById(car);
-    if (!parentCar) return res.status(404).json({ message: "Car not found" });
+    if (!parentCar) {
+      return res.status(404).json({ error: "Car not found" });
+    }
 
-    const model = new Model({ name, type, price, car });
-    const savedModel = await model.save();
+    // Create and save new model
+    const newModel = await Model.create({ name, type, price, car });
 
-    // Optionally, add model to the car's models array
-    parentCar.models.push(savedModel._id);
+    // Add the model to the car's models array
+    parentCar.models.push(newModel._id);
     await parentCar.save();
 
-    res.status(201).json(savedModel);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(201).json(newModel);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
 
-// Update model by ID
-exports.updateModel = async (req, res) => {
+// Update a model by ID
+const updateModel = async (req, res) => {
   try {
+    const { id } = req.params;
     const { name, type, price, car } = req.body;
-    const model = await Model.findByIdAndUpdate(
-      req.params.id,
+
+    // Find and update the model
+    const updatedModel = await Model.findByIdAndUpdate(
+      id,
       { name, type, price, car },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true } // Return the updated model and validate inputs
     );
-    if (!model) return res.status(404).json({ message: "Model not found" });
-    res.status(200).json(model);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+
+    if (!updatedModel) {
+      return res.status(404).json({ error: "Model not found" });
+    }
+
+    res.status(200).json(updatedModel);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
 
-// Delete model by ID
-exports.deleteModel = async (req, res) => {
+// Delete a model by ID
+const deleteModel = async (req, res) => {
   try {
-    const model = await Model.findByIdAndDelete(req.params.id);
-    if (!model) return res.status(404).json({ message: "Model not found" });
+    const { id } = req.params;
 
-    // Optionally, remove model from car's models array
-    const parentCar = await Car.findById(model.car);
+    // Find and delete the model
+    const deletedModel = await Model.findByIdAndDelete(id);
+    if (!deletedModel) {
+      return res.status(404).json({ error: "Model not found" });
+    }
+
+    // Remove the model from the parent car's models array
+    const parentCar = await Car.findById(deletedModel.car);
     if (parentCar) {
       parentCar.models = parentCar.models.filter(
-        (id) => id.toString() !== model._id.toString()
+        (modelId) => modelId.toString() !== deletedModel._id.toString()
       );
       await parentCar.save();
     }
 
-    res.status(200).json({ message: "Model deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(200).json({ message: "Model deleted successfully." });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
+};
+
+// Export all functions
+module.exports = {
+  getAllModels,
+  getModelById,
+  createModel,
+  updateModel,
+  deleteModel,
 };

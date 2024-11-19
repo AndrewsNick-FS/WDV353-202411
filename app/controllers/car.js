@@ -1,61 +1,88 @@
-const Car = require("../models/car");
+const Car = require("../models/car"); // Assuming the Car schema is in models/car.js
 
 // Get all cars
-exports.getAllCars = async (req, res) => {
+const getAllCars = async (req, res) => {
   try {
-    const cars = await Car.find().populate("models");
+    const cars = await Car.find(); // Fetch all cars from the database
     res.status(200).json(cars);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
 
-// Get car by ID
-exports.getCarById = async (req, res) => {
+// Get a car by ID
+const getCarById = async (req, res) => {
   try {
-    const car = await Car.findById(req.params.id).populate("models");
-    if (!car) return res.status(404).json({ message: "Car not found" });
+    const car = await Car.findById(req.params.id); // Find a car by its ID
+    if (!car) {
+      return res.status(404).json({ error: "Car not found" });
+    }
     res.status(200).json(car);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
 
 // Create a new car
-exports.createCar = async (req, res) => {
+const createCar = async (req, res) => {
   try {
     const { name, country, yearEstablished } = req.body;
-    const car = new Car({ name, country, yearEstablished });
-    const savedCar = await car.save();
-    res.status(201).json(savedCar);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+
+    // Validate fields
+    if (!name || !country || !yearEstablished) {
+      return res.status(400).json({ error: "All fields are required." });
+    }
+
+    // Create a new car document
+    const newCar = await Car.create({ name, country, yearEstablished });
+    res.status(201).json(newCar);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
 
-// Update car by ID
-exports.updateCar = async (req, res) => {
+// Update a car by ID
+const updateCar = async (req, res) => {
   try {
+    const { id } = req.params;
     const { name, country, yearEstablished } = req.body;
-    const car = await Car.findByIdAndUpdate(
-      req.params.id,
+
+    const updatedCar = await Car.findByIdAndUpdate(
+      id,
       { name, country, yearEstablished },
-      { new: true, runValidators: true } // Returns updated car
+      { new: true, runValidators: true } // Return the updated car and validate inputs
     );
-    if (!car) return res.status(404).json({ message: "Car not found" });
-    res.status(200).json(car);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+
+    if (!updatedCar) {
+      return res.status(404).json({ error: "Car not found" });
+    }
+
+    res.status(200).json(updatedCar);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
 
-// Delete car by ID
-exports.deleteCar = async (req, res) => {
+// Delete a car by ID
+const deleteCar = async (req, res) => {
   try {
-    const car = await Car.findByIdAndDelete(req.params.id);
-    if (!car) return res.status(404).json({ message: "Car not found" });
-    res.status(200).json({ message: "Car deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    const { id } = req.params;
+
+    const deletedCar = await Car.findByIdAndDelete(id);
+    if (!deletedCar) {
+      return res.status(404).json({ error: "Car not found" });
+    }
+
+    res.status(200).json({ message: "Car deleted successfully." });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
+};
+
+module.exports = {
+  getAllCars,
+  getCarById,
+  createCar,
+  updateCar,
+  deleteCar,
 };

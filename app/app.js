@@ -6,14 +6,13 @@ const carRoutes = require("./routes/cars");
 const modelRoutes = require("./routes/model");
 
 app.use(express.json());
+// Mount routes
+app.use("/cars", carRoutes);
+app.use("/models", modelRoutes);
 
 app.get("/", (req, res) => {
   res.status(200).send("Service is up");
 });
-
-// Mount routes
-app.use("/cars", carRoutes);
-app.use("/models", modelRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
