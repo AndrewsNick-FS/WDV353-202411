@@ -10,10 +10,6 @@ app.use(express.json());
 app.use("/cars", carRoutes);
 app.use("/models", modelRoutes);
 
-app.get("/", (req, res) => {
-  res.status(200).send("Service is up");
-});
-
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);

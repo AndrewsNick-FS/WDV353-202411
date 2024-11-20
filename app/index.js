@@ -12,7 +12,6 @@ const readData = () => {
 };
 
 //  GET
-`localhost:3000/api/`;
 router.get("/", (req, res) => {
   const data = readData();
   res.status(200).json(data);
