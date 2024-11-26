@@ -30,7 +30,7 @@ const createModel = async (req, res) => {
     const { name, manufacturer, category } = req.body;
 
     // Validate required fields
-    if (!name || !type || !price || !car) {
+    if (!name || !price || !car) {
       return res.status(400).json({ error: "All fields are required." });
     }
 
@@ -41,7 +41,7 @@ const createModel = async (req, res) => {
     }
 
     // Create and save new model
-    const newModel = await Model.create({ name, type, price, car });
+    const newModel = await Model.create({ name, price, car });
 
     // Add the model to the car's models array
     parentCar.models.push(newModel._id);
@@ -57,7 +57,7 @@ const createModel = async (req, res) => {
 const updateModel = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, type, price, car } = req.body;
+    const { name, price, car } = req.body;
 
     // Find and update the model
     const updatedModel = await Model.findByIdAndUpdate(
