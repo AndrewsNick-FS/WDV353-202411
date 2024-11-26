@@ -30,7 +30,7 @@ const createModel = async (req, res) => {
     const { name, manufacturer, category } = req.body;
 
     // Validate required fields
-    if (!name || !manufacturer || !category) {
+    if (!name || !type || !price || !car) {
       return res.status(400).json({ error: "All fields are required." });
     }
 
