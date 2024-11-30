@@ -8,7 +8,7 @@ const ModelList = () => {
   useEffect(() => {
     const fetchModels = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/models");
+        const response = await axios.get("http://localhost:5001/models");
         setModels(response.data);
       } catch (error) {
         console.error("Error fetching models:", error);
@@ -20,7 +20,7 @@ const ModelList = () => {
   // Delete a model
   const deleteModel = async (id) => {
     try {
-      await axios.delete(`http://localhost:3000/models/${id}`);
+      await axios.delete(`http://localhost:5001/models/${id}`);
       setModels(models.filter((model) => model._id !== id));
     } catch (error) {
       console.error("Error deletingf model:", error);

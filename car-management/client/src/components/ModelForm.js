@@ -15,7 +15,7 @@ const ModelForm = ({ refreshModels }) => {
   useEffect(() => {
     const fetchCars = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/cars");
+        const response = await axios.get("http://localhost:5001/cars");
         setCars(response.data);
       } catch (error) {
         console.error("Error fetching cars:", error);
@@ -33,7 +33,7 @@ const ModelForm = ({ refreshModels }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:3000/models", formData);
+      await axios.post("http://localhost:5001/models", formData);
       setFormData({ name: "", type: "", price: "", car: "" }); //Form reset
       refreshModels(); // Update Parent Component
     } catch (error) {
