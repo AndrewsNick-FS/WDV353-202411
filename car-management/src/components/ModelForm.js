@@ -4,9 +4,8 @@ import axios from "axios";
 const ModelForm = ({ refreshModels }) => {
   const [formData, setFormData] = useState({
     name: "",
-    type: "",
-    price: "",
-    car: "", // Car ID
+    manufacturer: "",
+    category: "",
   });
 
   const [cars, setCars] = useState([]);
@@ -34,7 +33,7 @@ const ModelForm = ({ refreshModels }) => {
     e.preventDefault();
     try {
       await axios.post("http://localhost:5001/models", formData);
-      setFormData({ name: "", type: "", price: "", car: "" }); //Form reset
+      setFormData({ name: "", manufacturer: "", category: "" }); //Form reset
       refreshModels(); // Update Parent Component
     } catch (error) {
       console.error("Error creating model:", error);
@@ -59,10 +58,10 @@ const ModelForm = ({ refreshModels }) => {
         />
       </label>
       <label className="block mb-2">
-        Type:
+        Manufacturer:
         <input
           type="text"
-          name="type"
+          name="manufacturer"
           value={formData.type}
           onChange={handleChange}
           className="w-full px-2 py-1 rounded"
@@ -70,11 +69,10 @@ const ModelForm = ({ refreshModels }) => {
         />
       </label>
       <label className="block mb-2">
-        Price:
+        Category:
         <input
-          type="number"
-          name="price"
-          value={formData.price}
+          type="text"
+          name="category"
           onChange={handleChange}
           className="w-full px-2 py-1 rounded"
           required

@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Model = require("../models/model");
 const Car = require("../models/car");
 
@@ -27,21 +28,37 @@ const getModelById = async (req, res) => {
 // Create a new model
 const createModel = async (req, res) => {
   try {
-    const { name, manufacturer, category } = req.body;
+    console.log("Request Body:", req.body); // testing
+
+    const { name, manufacturer, category, carId } = req.body;
 
     // Validate required fields
-    if (!name || !price || !car) {
+    if (!name || !manufacturer || !category || !carId) {
+      console.log("Missing required fields");
+
       return res.status(400).json({ error: "All fields are required." });
     }
 
-    // Validate car existence
-    const parentCar = await Car.findById(car);
+    if (!mongoose.Types.ObjectId.isValid(carId)) {
+      console.log("Invalid Car ID format");
+
+      return res.status(400).json({ error: "Invalid car ID format." });
+    }
+
+    const parentCar = await Car.findById(carId);
+    console.log("Parent Car Found:", parentCar);
+
     if (!parentCar) {
-      return res.status(404).json({ error: "Car not found" });
+      return res.status(404).json({ error: "Car not found." });
     }
 
     // Create and save new model
-    const newModel = await Model.create({ name, price, car });
+    const newModel = await Model.create({
+      name,
+      manufacturer,
+      category,
+      car: carId, // Associate the model with the car
+    });
 
     // Add the model to the car's models array
     parentCar.models.push(newModel._id);
@@ -49,6 +66,8 @@ const createModel = async (req, res) => {
 
     res.status(201).json(newModel);
   } catch (err) {
+    console.error("Error:", err.message);
+
     res.status(500).json({ error: err.message });
   }
 };
@@ -57,12 +76,12 @@ const createModel = async (req, res) => {
 const updateModel = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, price, car } = req.body;
+    const { name, manufacturer, category, carId } = req.body;
 
     // Find and update the model
     const updatedModel = await Model.findByIdAndUpdate(
       id,
-      { name, type, price, car },
+      { name, manufacturer, category, carId },
       { new: true, runValidators: true } // Return the updated model and validate inputs
     );
 
