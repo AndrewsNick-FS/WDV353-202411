@@ -7,6 +7,7 @@ const carRoutes = require("./routes/cars");
 const modelRoutes = require("./routes/model");
 
 app.use(express.json());
+app.use(cors());
 // Mount routes
 app.use("/cars", carRoutes);
 app.use("/models", modelRoutes);

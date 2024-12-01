@@ -31,7 +31,7 @@ const CarForm = () => {
   // Delete a car
   const handleDeleteCar = (id) => {
     api
-      .delete("/cars/${id")
+      .delete(`/cars/${id}`)
       .then(() => setCars(cars.filter((car) => car._id !== id)))
       .catch((err) => console.error(err));
   };

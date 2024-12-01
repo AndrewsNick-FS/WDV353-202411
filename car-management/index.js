@@ -1,3 +1,4 @@
+import axios from "axios";
 const express = require("express");
 const router = express.Router();
 const path = require("path");
@@ -18,7 +19,6 @@ router.get("/", (req, res) => {
 });
 
 // Get by id
-`localhost:3000/api/:id`;
 router.delete("/:id", (req, res) => {
   const data = readData();
   const item = data.find((d) => d.id === parseInt(req.params.id));
@@ -32,7 +32,7 @@ router.post("/", (req, res) => {
   const data = readData();
   const newItem = { id: Date.now(), ...req.body };
   data.push(newItem);
-  writeData(data);
+  axios.writeData(data);
   res.status(201).json(newItem);
 });
 
@@ -42,7 +42,7 @@ router.put("/:id", (req, res) => {
   const index = data.findIndex((d) => d.id === parseInt(req.params.id));
   if (index !== -1) {
     data[index] = { ...data[index], ...req.body };
-    writeData(data);
+    axios.writeData(data);
     res.status(200).json(data[index]);
   } else {
     res.status(404).json({ message: "Item not found" });
@@ -54,7 +54,7 @@ router.delete("/:id", (req, res) => {
   let data = readData();
   const newData = data.filter((d) => d.id !== parseInt(req.params.id));
   if (newData.length !== data.length) {
-    writeData(newData);
+    axios.writeData(newData);
     res.status(200).json({ message: "Item deleted" });
   } else {
     res.status(404).json({ message: "Item not found" });
