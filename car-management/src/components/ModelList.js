@@ -32,8 +32,8 @@ const ModelList = () => {
       <ul className="list-disc list-inside bg-black text-cyan-300 rounded p-4">
         {models.map((model) => (
           <li key={model._id} className="mb-2">
-            <span className="font-semibold">{model.name}</span> - {model.type}{" "}
-            (${model.price})<small> | Car: {model.car.name}</small>
+            <span className="font-semibold">{model.name}</span> - {model.type} (
+            {model.category})<small> | Manufacturer: {model.car.name}</small>
             <div className="mt-2">
               <button
                 className="bg-cyan-500 text-black px-2 py-1 rounded mr-2"
